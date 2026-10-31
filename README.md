@@ -79,6 +79,58 @@ python visualize.py
 Outputs 4-panel visual comparison figures (Input Photo, Ground Truth Overlay, Prediction Overlay, Error Map) into the `visualizations/` folder.
 
 ---
+### Captured Photos Workflow
+
+A complete step-by-step pipeline is provided for taking, formatting, annotating, evaluating, and visualizing captured photos:
+
+#### Step 1: Capture and Place Photos
+Took 5 photos on your phone around college or hostel showing everyday objects and placed the raw photos in:
+```text
+captured/original/
+```
+(e.g., `i1.jpg`, `i2.jpg`, ..., `i5.jpg`).
+
+#### Step 2: Auto-Resize Photos to 256x256
+Run the preparation script:
+```bash
+.\python.bat prepare_captured.py
+```
+
+This reads each photo from `captured/original/`, resizes it to 256 × 256 using `cv2.INTER_AREA` (squashing non-square images), and saves it as `captured/images_256/<stem>.png`.
+
+#### Step 3: Create Ground-Truth Masks
+Create a binary mask for each resized photo, where the main object is white (`255`) and the background is black (`0`), and save it to:
+```text
+captured/masks_256/<stem>.png
+```
+
+> You can use the trained model to generate an initial draft mask for each photo, then make any minor touch-ups in Paint or GIMP:
+> ```bash
+> python predict.py --image captured/images_256/item1.png --out captured/masks_256/i1.png
+> ```
+> Open `captured/masks_256/i1.png` in MS Paint, fill or clean up any boundary areas with the pencil with pure black(255) for background and pure white(0) for foreground, and save.
+
+#### Step 4: Verify and Normalize Masks
+Re-run the preparation tool to verify and ensure strict binary values:
+```bash
+python prepare_captured.py
+```
+The script applies threshold $\ge 128$ to ensure all pixels are strictly `{0, 255}` with `cv2.INTER_NEAREST` and confirms that all filenames match across `original/`, `images_256/`, and `masks_256/`.
+
+#### Step 5: Generate Visual Overlays for the Report
+Generate side-by-side 4-panel visual comparisons for each captured photo:
+```bash
+python visualize.py
+```
+This produces 4-panel comparison images (`Input Photo | Ground Truth Overlay | Prediction Overlay | Error Map`) into the `visualizations/` folder.
+
+#### Step 6: Evaluate Captured Photos & Update Report
+Evaluate the quantitative accuracy on captured photos:
+```bash
+python evaluate.py --images captured/images_256 --masks captured/masks_256
+```
+This computes and prints `mIoU`, `Boundary F1 (BF1)`, and `Quality Q`. Record these three values into the **Captured Photos** row of the results table in `REPORT.md`.
+
 
 ## 4. File Structure
 
@@ -105,6 +157,6 @@ cv-2/
 
 | Dataset | mIoU | Boundary F1 | Quality (Q) | $T_{CPU}$ (ms) | $S_{disk}$ (Bytes) | CES Score |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Validation Set** | `0.XXXXX` | `0.XXXXX` | `0.XXXXX` | - | - | - |
-| **DUTS-TE (Test)** | `0.XXXXX` | `0.XXXXX` | `0.XXXXX` | `XX.XX` | `XXXXXX` | `0.XXXXX` |
-| **Captured Photos** | `0.64388` | `0.19201` | `0.50832` | - | - | - |
+| **Validation Set** | `1055` | `0.70108` | `0.25467` | `0.56716` |`11.85` | `108899` | `0.53880` |
+| **DUTS-TE (Test)** | `5019` | `0.56772` | `0.16956` | `0.44827` | `18.88` | `108899` | `0.41326` |
+| **Captured Photos** | `5` | `0.64388` | `0.19201` | `0.50832` | `12.03` | `108899` | `0.48253` |
