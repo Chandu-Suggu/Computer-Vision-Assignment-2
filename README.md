@@ -101,3 +101,10 @@ cv-2/
 ├── REPORT.md             # Complete assignment report
 └── README.md             # Project documentation
 ```
+### Evaluation Metrics
+
+| Dataset | mIoU | Boundary F1 | Quality (Q) | $T_{CPU}$ (ms) | $S_{disk}$ (Bytes) | CES Score |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Validation Set** | `0.XXXXX` | `0.XXXXX` | `0.XXXXX` | - | - | - |
+| **DUTS-TE (Test)** | `0.XXXXX` | `0.XXXXX` | `0.XXXXX` | `XX.XX` | `XXXXXX` | `0.XXXXX` |
+| **Captured Photos** | `0.64388` | `0.19201` | `0.50832` | - | - | - |
